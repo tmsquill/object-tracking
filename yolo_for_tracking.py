@@ -130,23 +130,30 @@ class YOLO():
 
         return frame, boxes
 
-    def inference(self,image):
+    def inference(self, image):
 
         """
-        Main loop taking an image as input and generated frames with drawn
+        Takes an image as input, then runs inference to generate a set of
         bounding boxes as output.
         """
 
         # Create a 4D blob from a frame.
-        blob = cv2.dnn.blobFromImage(image, 1/255, (self.inp_width, self.inp_height), [0,0,0], 1, crop=False)
+        blob = cv2.dnn.blobFromImage(
+            image,
+            1/255,
+            (self.inp_width, self.inp_height),
+            [0,0,0],
+            1,
+            crop=False
+        )
 
-        # Sets the input to the network
+        # Assign the image as the input to the network.
         self.net.setInput(blob)
 
-        # Runs the forward pass to get output of the output layers
+        # Runs the forward pass to get output of the output layers.
         outs = self.net.forward(self.get_outputs_names())
 
-        # Remove the bounding boxes with low confidence
+        # Remove the bounding boxes with low confidence and markup the frame.
         final_frame, boxes = self.post_process(image, outs)
 
         return final_frame, boxes
